@@ -1,0 +1,42 @@
+/root/arshad/Putsf/server/venv/lib/python3.12/site-packages/gunicorn/util.py:25: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+[2025-11-03 12:12:58 +0000] [385660] [INFO] Starting gunicorn 20.1.0
+[2025-11-03 12:12:58 +0000] [385660] [ERROR] Connection in use: ('0.0.0.0', 8000)
+[2025-11-03 12:12:58 +0000] [385660] [ERROR] Retrying in 1 second.
+[2025-11-03 12:12:59 +0000] [385660] [ERROR] Connection in use: ('0.0.0.0', 8000)
+[2025-11-03 12:12:59 +0000] [385660] [ERROR] Retrying in 1 second.
+[2025-11-03 12:13:00 +0000] [385660] [ERROR] Connection in use: ('0.0.0.0', 8000)
+[2025-11-03 12:13:00 +0000] [385660] [ERROR] Retrying in 1 second.
+[2025-11-03 12:13:01 +0000] [385660] [ERROR] Connection in use: ('0.0.0.0', 8000)
+[2025-11-03 12:13:01 +0000] [385660] [ERROR] Retrying in 1 second.
+[2025-11-03 12:13:02 +0000] [385660] [ERROR] Connection in use: ('0.0.0.0', 8000)
+[2025-11-03 12:13:02 +0000] [385660] [ERROR] Retrying in 1 second.
+[2025-11-03 12:13:03 +0000] [385660] [ERROR] Can't connect to ('0.0.0.0', 8000)
+/root/arshad/Putsf/server/venv/lib/python3.12/site-packages/gunicorn/util.py:25: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+[2025-11-03 12:14:18 +0000] [385834] [INFO] Starting gunicorn 20.1.0
+[2025-11-03 12:14:18 +0000] [385834] [ERROR] Connection in use: ('0.0.0.0', 8000)
+[2025-11-03 12:14:18 +0000] [385834] [ERROR] Retrying in 1 second.
+[2025-11-03 12:14:19 +0000] [385834] [ERROR] Connection in use: ('0.0.0.0', 8000)
+[2025-11-03 12:14:19 +0000] [385834] [ERROR] Retrying in 1 second.
+[2025-11-03 12:14:20 +0000] [385834] [ERROR] Connection in use: ('0.0.0.0', 8000)
+[2025-11-03 12:14:20 +0000] [385834] [ERROR] Retrying in 1 second.
+[2025-11-03 12:14:21 +0000] [385834] [ERROR] Connection in use: ('0.0.0.0', 8000)
+[2025-11-03 12:14:21 +0000] [385834] [ERROR] Retrying in 1 second.
+[2025-11-03 12:14:22 +0000] [385834] [ERROR] Connection in use: ('0.0.0.0', 8000)
+[2025-11-03 12:14:22 +0000] [385834] [ERROR] Retrying in 1 second.
+[2025-11-03 12:14:23 +0000] [385834] [ERROR] Can't connect to ('0.0.0.0', 8000)
+/root/arshad/Putsf/server/venv/lib/python3.12/site-packages/gunicorn/util.py:25: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+[2025-11-03 12:21:04 +0000] [386724] [INFO] Starting gunicorn 20.1.0
+[2025-11-03 12:21:04 +0000] [386724] [ERROR] Connection in use: ('0.0.0.0', 8000)
+[2025-11-03 12:21:04 +0000] [386724] [ERROR] Retrying in 1 second.
+[2025-11-03 12:21:05 +0000] [386724] [ERROR] Connection in use: ('0.0.0.0', 8000)
+[2025-11-03 12:21:05 +0000] [386724] [ERROR] Retrying in 1 second.
+[2025-11-03 12:21:06 +0000] [386724] [ERROR] Connection in use: ('0.0.0.0', 8000)
+[2025-11-03 12:21:06 +0000] [386724] [ERROR] Retrying in 1 second.
+[2025-11-03 12:21:07 +0000] [386724] [ERROR] Connection in use: ('0.0.0.0', 8000)
+[2025-11-03 12:21:07 +0000] [386724] [ERROR] Retrying in 1 second.
+[2025-11-03 12:21:08 +0000] [386724] [ERROR] Connection in use: ('0.0.0.0', 8000)
+[2025-11-03 12:21:08 +0000] [386724] [ERROR] Retrying in 1 second.
+[2025-11-03 12:21:09 +0000] [386724] [ERROR] Can't connect to ('0.0.0.0', 8000)

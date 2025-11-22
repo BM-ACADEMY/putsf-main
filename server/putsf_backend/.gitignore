@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+
+# Virtual environment
+venv/
+
+# Django
+*.log
+*.pot
+*.pyc
+*.sqlite3
+db.sqlite3
+server/db.sqlite3    # ✅ Added this line
+# media/              <-- temporarily comment this to add old images
+staticfiles/
+
+# Environment variables
+
+
+# IDEs / Editors
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# MacOS
+.DS_Store
+
+# Render / deployment
+*.pem
+*.key
+
+# Frontend
+
