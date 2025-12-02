@@ -3,6 +3,6 @@ from .models import License
 
 @admin.register(License)
 class LicenseAdmin(admin.ModelAdmin):
-    list_display = ("name", "aadhar_number", "phone", "is_approved", "created_at")
-    list_filter = ("is_approved",)
-    search_fields = ("name", "aadhar_number", "phone")
+    list_display = ("name", "gender", "education", "phone", "is_approved", "created_at")
+    search_fields = ("name", "phone")
+    list_filter = ("gender", "is_approved", "education")

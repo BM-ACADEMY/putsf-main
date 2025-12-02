@@ -12,7 +12,7 @@ const Bar = () => {
 
   return (
     <div className="w-full font-sans text-gray-900 relative overflow-hidden bg-gradient-to-br from-blue-50 via-white to-red-50 px-4 md:px-12 py-8">
-      
+
       {/* 🌈 Top Banner */}
       <div className="bg-gradient-to-r from-[#0033A0] via-[#D62828] to-black text-white text-center py-4 rounded-xl shadow-lg">
         <p className="text-lg md:text-xl font-semibold tracking-wide">
@@ -47,7 +47,7 @@ const Bar = () => {
         {activeTab === "about" && (
           <>
             <h2 className="text-3xl p-2 md:text-4xl font-extrabold bg-gradient-to-r from-[#0033A0] via-[#D62828] to-black bg-clip-text text-transparent mb-3 drop-shadow-md">
-              மாணவர்கள் முன்னேற்றப் பாசறை
+              மாணவர்கள் முன்னேற்றப் 
             </h2>
             <div className="mx-auto w-28 h-1.5 bg-gradient-to-r from-[#0033A0] via-[#D62828] to-black rounded-full mb-6 shadow-lg"></div>
             <p className="text-gray-700 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">

@@ -1,90 +1,158 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
+import { FaDownload } from "react-icons/fa";
+import { motion } from "framer-motion";
+import html2canvas from "html2canvas";   // FIXED → uses correct library
+import { jsPDF } from "jspdf";
 
-const MembershipCard = () => {
+export default function MembershipDownload() {
   const [phone, setPhone] = useState("");
-  const [error, setError] = useState("");
+  const [member, setMember] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const cardRef = useRef();
 
-  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+const API_URL = `${import.meta.env.VITE_API_BASE_URL}/license-download`;
 
-  const fetchMember = async () => {
-    try {
-      setError("");
-
-      if (!phone.trim()) {
-        setError("Please enter a valid phone number.");
-        return;
-      }
-
-      const res = await axios.get(
-        `${API_BASE_URL}/download_license?phone=${phone}`,
-        { responseType: "arraybuffer" }
-      );
-
-      // ✅ Convert response to downloadable PDF
-      const blob = new Blob([res.data], { type: "application/pdf" });
-      const url = window.URL.createObjectURL(blob);
-      window.open(url, "_blank");
-    } catch (err) {
-      setError("No approved membership found for this phone number.");
+  /* ---------------------------------------
+     FETCH MEMBER
+  --------------------------------------- */
+  const handleFetch = async () => {
+    if (phone.length !== 10) {
+      toast.error("❌ Enter valid 10-digit phone number.");
+      return;
     }
+
+    setLoading(true);
+
+    try {
+      const res = await axios.get(`${API_URL}/?phone=${phone}`, {
+        validateStatus: () => true,
+      });
+
+      if (res.status === 200 && res.data?.data) {
+        setMember(res.data.data);
+        toast.success("🎉 Member found!");
+      } else {
+        setMember(null);
+        toast.error("❌ Member not found or not approved.");
+      }
+    } catch (error) {
+      toast.error("❌ Error fetching member data.");
+      setMember(null);
+    }
+
+    setLoading(false);
+  };
+
+  /* ---------------------------------------
+     DOWNLOAD PDF
+  --------------------------------------- */
+  const handleDownloadPDF = async () => {
+    if (!cardRef.current) return;
+
+    setLoading(true);
+
+    try {
+      // Wait for layout & images to fully load
+      await new Promise((resolve) => setTimeout(resolve, 300));
+
+      const canvas = await html2canvas(cardRef.current, {
+        scale: 3,
+        useCORS: true,
+        allowTaint: true,
+      });
+
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "mm", "a4");
+
+      pdf.addImage(imgData, "PNG", 10, 10, 190, 0);
+      pdf.save(`membership_card_${member.phone}.pdf`);
+
+      toast.success("📄 PDF downloaded successfully!");
+    } catch (err) {
+      console.error("PDF Generation Error:", err);
+      toast.error("❌ PDF generation failed.");
+    }
+
+    setLoading(false);
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
-      <div className="bg-white shadow-xl rounded-2xl p-6 w-full max-w-md border border-gray-200">
-        <div className="flex flex-col items-center">
-          <h1 className="text-xl font-bold text-center text-blue-900">
-            Puducherry Union Territory Student’s Federation
-          </h1>
-          <p className="text-sm text-gray-600 mb-2">
-            Official Membership Identity Card
-          </p>
-          <p className="text-xs text-gray-500 mb-4">
-            Unity • Progress • Discipline
-          </p>
+    <section className="min-h-[90vh] flex items-center justify-center bg-gradient-to-br from-blue-50 via-red-50 to-yellow-50">
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="max-w-md w-full bg-white shadow-2xl rounded-2xl p-8 text-center border-t-8 border-[#D62828] relative overflow-hidden"
+      >
+        <h1 className="text-3xl font-extrabold text-[#0033A0] mb-3">
+          Download Membership Card
+        </h1>
 
-          <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center mb-3">
-            <span className="text-gray-400 text-xs">Logo</span>
-          </div>
+        {/* Phone Input */}
+        <input
+          type="text"
+          placeholder="Enter 10-digit phone number"
+          value={phone}
+          maxLength={10}
+          onChange={(e) => {
+            const onlyNums = e.target.value.replace(/\D/g, "");
+            if (onlyNums.length <= 10) setPhone(onlyNums);
+          }}
+          className="border p-3 rounded-lg w-full text-center mb-3"
+        />
 
-          <div className="w-full border p-4 rounded-lg">
-            <div className="flex items-center space-x-3">
-              <img
-                src={"/default_user.png"}
-                alt="Member"
-                className="w-20 h-20 border-2 border-red-500 object-cover rounded"
-              />
-              <div>
-                <p><strong>Name:</strong> —</p>
-                <p><strong>Aadhar:</strong> —</p>
-                <p><strong>Phone:</strong> —</p>
-                <p><strong>Status:</strong> Pending ⏳</p>
-              </div>
-            </div>
-          </div>
+        {/* Fetch Button */}
+        <button
+          onClick={handleFetch}
+          disabled={loading}
+          className="w-full bg-gradient-to-r from-[#0033A0] via-[#D62828] to-[#000000] text-white p-3 rounded-lg"
+        >
+          {loading ? "Checking..." : "Fetch Card"}
+        </button>
 
-          <div className="mt-4 text-center">
-            <input
-              type="text"
-              placeholder="Enter phone number"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              className="border p-2 rounded-lg w-56 text-center"
-            />
-            <button
-              onClick={fetchMember}
-              className="ml-2 bg-blue-700 text-white px-4 py-2 rounded-lg hover:bg-blue-800"
+        {/* SHOW CARD */}
+        {member && (
+          <>
+            <div
+              ref={cardRef}
+              className="mt-6 p-5 border shadow-xl bg-white rounded-xl w-[400px] mx-auto"
             >
-              Download PDF
+              <h2 className="font-bold mb-3 text-lg text-center">
+                Puducherry Union Territory Student’s Federation
+              </h2>
+
+              <div className="flex gap-4 items-center">
+                <img
+                  src={member.photo}
+                  className="w-24 h-24 rounded border object-cover"
+                  alt="Member"
+                />
+
+                <div className="text-sm text-left">
+                  <p><strong>Name:</strong> {member.name}</p>
+                  <p><strong>Gender:</strong> {member.gender}</p>
+                  <p><strong>Education:</strong> {member.education}</p>
+                  <p><strong>Phone:</strong> {member.phone}</p>
+                </div>
+              </div>
+
+              <p className="mt-3 text-sm">
+                <strong>Address:</strong> {member.address}
+              </p>
+            </div>
+
+            {/* Download Button */}
+            <button
+              onClick={handleDownloadPDF}
+              className="w-full mt-5 bg-red-600 text-white p-3 rounded-lg flex items-center justify-center gap-2"
+            >
+              <FaDownload /> Download PDF
             </button>
-          </div>
-
-          {error && <p className="text-red-600 mt-2 text-sm">{error}</p>}
-        </div>
-      </div>
-    </div>
+          </>
+        )}
+      </motion.div>
+    </section>
   );
-};
-
-export default MembershipCard;
+}

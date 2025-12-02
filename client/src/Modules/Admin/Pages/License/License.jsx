@@ -12,7 +12,7 @@ export default function LicenseAdmin() {
   const [processing, setProcessing] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
 
-  /* ---------------- Fetch Licenses ---------------- */
+  /* ------------ Fetch Licenses ------------- */
   const fetchLicenses = async () => {
     try {
       const res = await API.get(API_URL);
@@ -28,19 +28,17 @@ export default function LicenseAdmin() {
     fetchLicenses();
   }, []);
 
-  /* ---------------- Approve License ---------------- */
+  /* ------------ Approve License ------------- */
   const handleApprove = async (id) => {
     setProcessing(true);
     try {
       const res = await API.post(`${API_URL}${id}/approve/`);
 
-      // ✅ Success toast
       toast.success("✅ License approved successfully!", { className: "toast-success" });
 
-      // ✅ Refresh list
       fetchLicenses();
 
-      // ✅ WhatsApp link
+      // WhatsApp link
       if (res.data?.whatsapp_link) {
         toast.info(
           <div className="flex flex-col gap-1">
@@ -58,7 +56,7 @@ export default function LicenseAdmin() {
         );
       }
 
-      // ✅ Download link toast
+      // License PDF link
       if (res.data?.license_pdf) {
         toast.success(
           <a
@@ -80,7 +78,7 @@ export default function LicenseAdmin() {
     }
   };
 
-  /* ---------------- Delete License ---------------- */
+  /* ------------ Delete Handling ------------- */
   const confirmDelete = (license) => {
     setDeleteTarget(license);
   };
@@ -97,11 +95,11 @@ export default function LicenseAdmin() {
     }
   };
 
-  if (loading) return <p className="text-center mt-10 text-gray-500">Loading licenses...</p>;
+  if (loading)
+    return <p className="text-center mt-10 text-gray-500">Loading licenses...</p>;
 
   return (
     <div className="p-6 min-h-screen bg-gray-50">
-      {/* 🟩 Toast Container */}
       <ToastContainer
         position="top-right"
         autoClose={2000}
@@ -112,7 +110,7 @@ export default function LicenseAdmin() {
         transition={Slide}
       />
 
-      {/* 🟦 Toast Styles */}
+      {/* Custom Toast Styles */}
       <style>{`
         .Toastify__toast {
           font-weight: 600;
@@ -156,10 +154,18 @@ export default function LicenseAdmin() {
                     No Photo
                   </div>
                 )}
+
                 <div>
                   <h2 className="text-lg font-semibold text-gray-800">{item.name}</h2>
                   <p className="text-sm text-gray-600">{item.phone}</p>
-                  <p className="text-xs text-gray-500">{item.aadhar_number}</p>
+
+                  {/* NEW: Gender + Education */}
+                  <p className="text-xs text-gray-500 capitalize">
+                    {item.gender ? `Gender: ${item.gender}` : ""}
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    {item.education ? `Education: ${item.education}` : ""}
+                  </p>
                 </div>
               </div>
 
@@ -198,6 +204,7 @@ export default function LicenseAdmin() {
                       {processing ? "Approving..." : "Approve"}
                     </button>
                   )}
+
                   <button
                     onClick={() => confirmDelete(item)}
                     className="p-2 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg cursor-pointer"
@@ -208,7 +215,7 @@ export default function LicenseAdmin() {
                 </div>
               </div>
 
-              {/* ✅ Show download link if approved */}
+              {/* Download License */}
               {item.is_approved && item.license_pdf && (
                 <a
                   href={item.license_pdf}
@@ -224,7 +231,7 @@ export default function LicenseAdmin() {
         </div>
       )}
 
-      {/* 🟥 Delete Confirmation Modal */}
+      {/* Delete Confirmation */}
       {deleteTarget && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-xl shadow-xl w-96 text-center">

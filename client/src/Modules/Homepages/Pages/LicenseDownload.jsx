@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { FaDownload } from "react-icons/fa";
 import { motion } from "framer-motion";
+import html2canvas from "../../../utils/html2canvas";
+import { jsPDF } from "jspdf";
 
 export default function MembershipDownload() {
   const [phone, setPhone] = useState("");
@@ -10,8 +12,11 @@ export default function MembershipDownload() {
   const [progress, setProgress] = useState(0);
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
+  const [member, setMember] = useState(null);
 
-  const API_URL = `${import.meta.env.VITE_API_BASE_URL}/license-download`;
+  const cardRef = useRef();
+
+const API_URL = `${import.meta.env.VITE_API_BASE_URL}/license-download`;
 
   const simulateProgress = () => {
     let current = 0;
@@ -36,35 +41,33 @@ export default function MembershipDownload() {
     setSuccessMsg("");
     setLoading(true);
     setProgress(0);
+
     const interval = simulateProgress();
 
     try {
       const res = await axios.get(`${API_URL}/?phone=${cleanPhone}`, {
-        responseType: "blob",
         validateStatus: () => true,
       });
 
       clearInterval(interval);
       setProgress(100);
 
-      if (res.status === 404 || res.status === 400) {
-        setErrorMsg("Invalid credentials. Please check your phone number.");
-        toast.error("❌ Invalid credentials. Please check your phone number.");
-      } else if (res.status === 200) {
-        const url = window.URL.createObjectURL(new Blob([res.data]));
-        const link = document.createElement("a");
-        link.href = url;
-        link.setAttribute("download", "membership_card.pdf");
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-
-        toast.success("🎉 Membership Card downloaded successfully!");
-        setSuccessMsg("✅ Membership Card downloaded successfully!");
-      } else {
+      if (res.status !== 200 || !res.data?.data) {
         setErrorMsg("Membership not found or not approved yet.");
         toast.error("❌ Membership not found or not approved yet.");
+        setMember(null);
+        return;
       }
+
+      // Save member data
+      setMember(res.data.data);
+
+      toast.success("🎉 Member found! Generating PDF...");
+
+      setTimeout(() => generatePDF(res.data.data), 800);
+
+      setSuccessMsg("✅ Membership Card generated!");
+
     } catch (error) {
       clearInterval(interval);
       console.error(error);
@@ -76,6 +79,19 @@ export default function MembershipDownload() {
         setProgress(0);
       }, 1000);
     }
+  };
+
+  // Generate PDF using html2canvas + jsPDF
+  const generatePDF = async (data) => {
+    if (!cardRef.current) return;
+
+    const canvas = await html2canvas(cardRef.current, { scale: 3 });
+    const imgData = canvas.toDataURL("image/png");
+
+    const pdf = new jsPDF("p", "mm", "a4");
+    pdf.addImage(imgData, "PNG", 10, 10, 190, 0);
+
+    pdf.save(`membership_card_${data.phone}.pdf`);
   };
 
   return (
@@ -105,6 +121,7 @@ export default function MembershipDownload() {
           type="text"
           placeholder="Enter your 10-digit phone number"
           value={phone}
+          maxLength={10}
           onChange={(e) => {
             const onlyNums = e.target.value.replace(/\D/g, "");
             if (onlyNums.length <= 10) setPhone(onlyNums);
@@ -116,7 +133,6 @@ export default function MembershipDownload() {
               setErrorMsg("");
             }
           }}
-          maxLength={10}
           className={`border-2 ${
             errorMsg
               ? "border-red-500 focus:border-red-600"
@@ -124,7 +140,6 @@ export default function MembershipDownload() {
           } outline-none p-3 rounded-lg w-full mb-2 text-center text-gray-800 transition-all duration-300`}
         />
 
-        {/* Error message */}
         {errorMsg && (
           <p className="text-red-600 text-sm mb-3 font-medium animate-pulse">
             {errorMsg}
@@ -155,14 +170,43 @@ export default function MembershipDownload() {
           }`}
         >
           <FaDownload />
-          {loading ? "Downloading..." : "Download Card"}
+          {loading ? "Processing..." : "Download Card"}
         </button>
 
-        {/* Success Message */}
         {successMsg && (
           <p className="text-green-600 font-semibold mt-4 animate-pulse">
             {successMsg}
           </p>
+        )}
+
+        {/* Hidden Card for PDF */}
+        {member && (
+          <div
+            ref={cardRef}
+            className="mt-10 p-5 w-[350px] mx-auto bg-white border shadow-xl rounded-xl text-left"
+          >
+            <h2 className="font-bold text-center text-lg mb-3">
+              Puducherry Union Territory Student’s Federation
+            </h2>
+
+            <div className="flex gap-4 items-center">
+              <img
+                src={member.photo}
+                className="w-20 h-20 rounded border"
+                alt="Member"
+              />
+              <div className="text-sm">
+                <p><strong>Name:</strong> {member.name}</p>
+                <p><strong>Gender:</strong> {member.gender}</p>
+                <p><strong>Education:</strong> {member.education}</p>
+                <p><strong>Phone:</strong> {member.phone}</p>
+              </div>
+            </div>
+
+            <p className="mt-3 text-sm">
+              <strong>Address:</strong> {member.address}
+            </p>
+          </div>
         )}
 
         <p className="text-sm text-gray-600 mt-6 italic">

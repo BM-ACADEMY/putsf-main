@@ -3,18 +3,20 @@
 import React, { useState, useRef } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import MembershipDownload from "./LicenseDownload"; // ✅ Right side box
+import MembershipDownload from "./LicenseDownload";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export default function License() {
   const [formData, setFormData] = useState({
     name: "",
-    aadhar_number: "",
+    gender: "",
+    education: "",
     phone: "",
     address: "",
     photo: null,
   });
+
   const [loading, setLoading] = useState(false);
   const [phoneStatus, setPhoneStatus] = useState(null);
   const [fieldError, setFieldError] = useState("");
@@ -23,7 +25,7 @@ export default function License() {
   const debounceRef = useRef(null);
 
   // -----------------------------
-  // 🔹 Handle input changes
+  // Handle input changes
   // -----------------------------
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -47,7 +49,7 @@ export default function License() {
   };
 
   // -----------------------------
-  // 🔹 Live phone check (debounced)
+  // Live phone check (debounced)
   // -----------------------------
   const checkPhoneLive = (phone) => {
     clearTimeout(debounceRef.current);
@@ -71,7 +73,7 @@ export default function License() {
   };
 
   // -----------------------------
-  // 🔹 Handle Form Submission
+  // Handle form submit
   // -----------------------------
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -109,13 +111,15 @@ export default function License() {
 
       if (res.status === 201) {
         const successMsg =
-          res.data.message || "✅ Membership submitted successfully!";
+          res.data.message || "Membership submitted successfully!";
         toast.success(successMsg);
         setSuccessMessage(successMsg);
 
+        // Reset form
         setFormData({
           name: "",
-          aadhar_number: "",
+          gender: "",
+          education: "",
           phone: "",
           address: "",
           photo: null,
@@ -130,7 +134,7 @@ export default function License() {
       toast.error("Unexpected server response. Please try again.");
       setLoading(false);
     } catch (error) {
-      console.error("❌ Submission error:", error);
+      console.error("Submission error:", error);
       const backendError =
         error.response?.data?.error ||
         error.response?.data?.detail ||
@@ -145,48 +149,66 @@ export default function License() {
   };
 
   // -----------------------------
-  // 🔹 UI
+  // UI
   // -----------------------------
   return (
     <main className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-red-50 py-16 px-4 md:px-12">
-      {/* 🔹 Title */}
+
       <h1 className="text-3xl md:text-4xl font-extrabold text-center mb-12 bg-gradient-to-r from-[#0033A0] via-[#D62828] to-black bg-clip-text text-transparent uppercase tracking-wide">
         Membership Card Section
       </h1>
+
       <p className="text-center text-gray-600 mb-12 text-lg font-medium">
         Apply for your membership card or download your approved one below.
       </p>
 
-      {/* 🧩 Responsive Grid Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 max-w-6xl mx-auto">
+
         {/* Left — Application Form */}
         <div className="bg-white rounded-2xl shadow-2xl p-8 border-t-8 border-[#D62828]">
           <h2 className="text-2xl font-bold text-[#0033A0] text-center mb-2">
             Membership Card Application
           </h2>
-          <p className="text-gray-600 text-center mb-6">(Urupinar Attai)</p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
+
+            {/* Name */}
             <input
               type="text"
               name="name"
               placeholder="Full Name"
               value={formData.name}
               onChange={handleChange}
-              className="w-full border border-gray-300 p-3 rounded-lg focus:border-[#0033A0] outline-none"
+              className="w-full border border-gray-300 p-3 rounded-lg"
               required
             />
 
+            {/* Gender */}
+            <select
+              name="gender"
+              value={formData.gender}
+              onChange={handleChange}
+              className="w-full border border-gray-300 p-3 rounded-lg"
+              required
+            >
+              <option value="">Select Gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+            </select>
+
+            {/* Education */}
             <input
               type="text"
-              name="aadhar_number"
-              placeholder="Aadhar Number"
-              value={formData.aadhar_number}
+              name="education"
+              placeholder="Education (e.g., B.A, 10th Std, Diploma)"
+              value={formData.education}
               onChange={handleChange}
-              className="w-full border border-gray-300 p-3 rounded-lg focus:border-[#0033A0] outline-none"
+              className="w-full border border-gray-300 p-3 rounded-lg"
               required
             />
 
+            {/* Phone */}
             <div>
               <input
                 type="text"
@@ -195,7 +217,7 @@ export default function License() {
                 placeholder="Phone Number"
                 value={formData.phone}
                 onChange={handleChange}
-                className={`w-full p-3 rounded-lg outline-none transition-all duration-200 ${
+                className={`w-full p-3 rounded-lg outline-none ${
                   fieldError || phoneStatus?.exists
                     ? "border-2 border-red-500 bg-red-50"
                     : phoneStatus?.exists === false
@@ -214,23 +236,19 @@ export default function License() {
                   {phoneStatus.message}
                 </p>
               )}
-
-              {fieldError && (
-                <p className="text-red-600 text-sm mt-1 font-semibold">
-                  {fieldError}
-                </p>
-              )}
             </div>
 
+            {/* Address */}
             <textarea
               name="address"
               placeholder="Address"
               value={formData.address}
               onChange={handleChange}
-              className="w-full border border-gray-300 p-3 rounded-lg focus:border-[#0033A0] outline-none"
+              className="w-full border border-gray-300 p-3 rounded-lg"
               required
             />
 
+            {/* Photo Upload */}
             <input
               type="file"
               name="photo"
@@ -241,18 +259,20 @@ export default function License() {
               required
             />
 
+            {/* Submit Button */}
             <button
               type="submit"
               disabled={loading}
-              className={`w-full flex items-center justify-center gap-2 py-3 text-white font-semibold text-lg rounded-full transition-all duration-300 ${
+              className={`w-full py-3 text-white font-semibold text-lg rounded-full transition-all duration-300 ${
                 loading
                   ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-gradient-to-r from-[#0033A0] via-[#D62828] to-[#000000] hover:scale-[1.02] hover:shadow-lg"
+                  : "bg-gradient-to-r from-[#0033A0] via-[#D62828] to-black hover:scale-[1.02] hover:shadow-lg"
               }`}
             >
               {loading ? "Submitting..." : "Submit Application"}
             </button>
 
+            {/* Success Message */}
             {successMessage && (
               <p className="text-green-700 text-center font-semibold mt-4 bg-green-50 border border-green-400 p-3 rounded-lg">
                 {successMessage}
@@ -265,6 +285,7 @@ export default function License() {
         <div className="flex items-center justify-center">
           <MembershipDownload />
         </div>
+
       </div>
     </main>
   );
